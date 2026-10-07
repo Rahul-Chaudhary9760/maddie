@@ -1,6 +1,37 @@
 import mongoose from 'mongoose';
 import { BOOKING_STATUS, TIME_SLOTS } from '../../../config/constants.js';
 
+const addressSchema = new mongoose.Schema(
+    {
+        street: {
+            type: String,
+            required: [true, 'Street address is required'],
+            trim: true
+        },
+        city: {
+            type: String,
+            required: [true, 'City is required'],
+            trim: true
+        },
+        state: {
+            type: String,
+            trim: true,
+            default: ''
+        },
+        pincode: {
+            type: String,
+            required: [true, 'Pincode is required'],
+            trim: true
+        },
+        landmark: {
+            type: String,
+            trim: true,
+            default: ''
+        }
+    },
+    { _id: false }
+);
+
 const bookingSchema = new mongoose.Schema(
     {
         user: {
@@ -29,6 +60,10 @@ const bookingSchema = new mongoose.Schema(
             type: String,
             enum: ['male', 'female', 'other'],
             required: [true, 'Patient gender is required']
+        },
+        address: {
+            type: addressSchema,
+            required: [true, 'Address details are required']
         },
         appointmentDate: {
             type: Date,

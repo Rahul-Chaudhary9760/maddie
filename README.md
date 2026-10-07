@@ -175,6 +175,13 @@ Also returns `accessToken` in body for mobile clients.
   "patientName": "Rahul Chaudhary",
   "patientAge": 25,
   "patientGender": "male",
+  "address": {
+    "street": "123, Green Park Main",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "pincode": "110016",
+    "landmark": "Near Metro Station"
+  },
   "appointmentDate": "2026-12-01",
   "timeSlot": "09:00-10:00",
   "notes": "Fasting test"

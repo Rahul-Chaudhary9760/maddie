@@ -2,6 +2,36 @@ import { z } from 'zod';
 import { objectIdSchema } from '../../../utils/validation.utils.js';
 import { BOOKING_STATUS, TIME_SLOTS, UPDATABLE_BOOKING_STATUSES } from '../../../config/constants.js';
 
+export const addressValidationSchema = z.object({
+    street: z
+        .string({ required_error: 'Street address is required' })
+        .trim()
+        .min(3, 'Street address must be at least 3 characters long')
+        .max(200, 'Street address cannot exceed 200 characters'),
+    city: z
+        .string({ required_error: 'City is required' })
+        .trim()
+        .min(2, 'City must be at least 2 characters long')
+        .max(100, 'City cannot exceed 100 characters'),
+    state: z
+        .string()
+        .trim()
+        .max(100, 'State cannot exceed 100 characters')
+        .optional()
+        .default(''),
+    pincode: z
+        .string({ required_error: 'Pincode is required' })
+        .trim()
+        .min(4, 'Pincode must be at least 4 characters')
+        .max(10, 'Pincode cannot exceed 10 characters'),
+    landmark: z
+        .string()
+        .trim()
+        .max(150, 'Landmark cannot exceed 150 characters')
+        .optional()
+        .default('')
+});
+
 export const createBookingSchema = z.object({
     testId: objectIdSchema,
     patientName: z
@@ -19,6 +49,7 @@ export const createBookingSchema = z.object({
         .enum(['male', 'female', 'other'], {
             errorMap: () => ({ message: 'Gender must be either "male", "female", or "other"' })
         }),
+    address: addressValidationSchema,
     appointmentDate: z
         .string({ required_error: 'Appointment date is required' })
         .refine((val) => !isNaN(Date.parse(val)), {

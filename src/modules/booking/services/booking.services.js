@@ -11,7 +11,7 @@ import logger from '../../../utils/logger.js';
  * - Snapshots the current test price
  */
 export const createBooking = async (userId, bookingData) => {
-    const { testId, patientName, patientAge, patientGender, appointmentDate, timeSlot, notes } = bookingData;
+    const { testId, patientName, patientAge, patientGender, address, appointmentDate, timeSlot, notes } = bookingData;
     logger.info(`📅 Creating booking: User=${userId}, Test=${testId}, Slot=${timeSlot}, Date=${appointmentDate}`);
 
     // Validate test exists and is available
@@ -58,6 +58,7 @@ export const createBooking = async (userId, bookingData) => {
         patientName,
         patientAge,
         patientGender,
+        address,
         appointmentDate: apptDate,
         timeSlot,
         totalAmount: test.price, // Snapshot price at booking time
