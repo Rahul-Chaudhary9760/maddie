@@ -10,7 +10,7 @@ import logger from '../../../utils/logger.js';
  * - Creates user (password hashed via pre-save hook in model)
  * - Returns user without sensitive fields
  */
-export const registerUser = async ({ name, email, password, role }) => {
+export const registerUser = async ({ name, email, password, role, phone }) => {
     logger.info(`📝 Registration attempt for: ${email} [role: ${role || 'user'}]`);
 
     const existingUser = await User.findOne({ email });
@@ -19,7 +19,7 @@ export const registerUser = async ({ name, email, password, role }) => {
         throw new AppError('An account with this email already exists', 400);
     }
 
-    const user = await User.create({ name, email, password, role });
+    const user = await User.create({ name, email, password, role, phone });
 
     // Return user object without password
     const createdUser = await User.findById(user._id);

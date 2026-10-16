@@ -9,6 +9,8 @@ import { AppError } from './utils/ApiError.js';
 import testRoutes from './modules/medical-test/routes/medical-test.routes.js';
 import authRoutes from './modules/auth/routes/auth.routes.js';
 import bookingRoutes from './modules/booking/routes/booking.routes.js';
+import phlebotomistRoutes from './modules/phlebotomist/routes/phlebotomist.routes.js';
+import adminRoutes from './modules/admin/routes/admin.routes.js';
 
 const app = express();
 
@@ -30,6 +32,8 @@ app.get('/health', (req, res) => {
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/tests', testRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
+app.use('/api/v1/phlebotomists', phlebotomistRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // ─── Unhandled Routes ─────────────────────────────────────────────────────────
 app.use((req, res, next) => {

@@ -39,6 +39,12 @@ export const createBookingSchema = z.object({
         .trim()
         .min(2, 'Patient name must be at least 2 characters long')
         .max(100, 'Patient name cannot exceed 100 characters'),
+    patientPhone: z
+        .string()
+        .trim()
+        .max(20, 'Patient phone cannot exceed 20 characters')
+        .optional()
+        .default(''),
     patientAge: z
         .coerce
         .number({ required_error: 'Patient age is required' })
@@ -79,10 +85,46 @@ export const updateBookingStatusSchema = z.object({
     status: z
         .enum(UPDATABLE_BOOKING_STATUSES, {
             errorMap: () => ({ message: `Status must be one of: ${UPDATABLE_BOOKING_STATUSES.join(', ')}` })
-        })
+        }),
+    collectionNotes: z
+        .string()
+        .trim()
+        .max(500, 'Collection notes cannot exceed 500 characters')
+        .optional()
+});
+
+export const assignPhlebotomistSchema = z.object({
+    phlebotomistId: z.union([objectIdSchema, z.null()], {
+        required_error: 'phlebotomistId is required (provide a valid 24-character hex ID, or null to unassign)'
+    })
+});
+
+export const collectSampleSchema = z.object({
+    collectionNotes: z
+        .string()
+        .trim()
+        .max(500, 'Collection notes cannot exceed 500 characters')
+        .optional()
+        .default('')
 });
 
 export const getBookingsQuerySchema = z.object({
+    status: z
+        .enum(Object.values(BOOKING_STATUS), {
+            errorMap: () => ({ message: `Status filter must be one of: ${Object.values(BOOKING_STATUS).join(', ')}` })
+        })
+        .optional(),
+    date: z
+        .string()
+        .refine((val) => !isNaN(Date.parse(val)), {
+            message: 'Invalid date filter format (use YYYY-MM-DD)'
+        })
+        .optional(),
+    phlebotomist: objectIdSchema.optional(),
+    isAssigned: z.enum(['true', 'false']).optional()
+});
+
+export const getPhlebotomistBookingsQuerySchema = z.object({
     status: z
         .enum(Object.values(BOOKING_STATUS), {
             errorMap: () => ({ message: `Status filter must be one of: ${Object.values(BOOKING_STATUS).join(', ')}` })

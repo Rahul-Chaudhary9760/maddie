@@ -8,9 +8,10 @@
 
 // ─── User Roles ───────────────────────────────────────────────────────────────
 export const USER_ROLES = {
-    USER:      'user',
-    ADMIN:     'admin',
-    LAB_STAFF: 'lab_staff',
+    USER:         'user',
+    ADMIN:        'admin',
+    LAB_STAFF:    'lab_staff',
+    PHLEBOTOMIST: 'phlebotomist',
 };
 
 // ─── Test Categories ──────────────────────────────────────────────────────────
@@ -23,17 +24,25 @@ export const TEST_CATEGORIES = {
 
 // ─── Booking Statuses ─────────────────────────────────────────────────────────
 export const BOOKING_STATUS = {
-    PENDING:   'pending',
-    CONFIRMED: 'confirmed',
-    COMPLETED: 'completed',
-    CANCELLED: 'cancelled',
+    PENDING:          'pending',
+    CONFIRMED:        'confirmed',
+    SAMPLE_COLLECTED: 'sample_collected',
+    COMPLETED:        'completed',
+    CANCELLED:        'cancelled',
 };
 
 // Statuses that lab staff / admin can set on a booking
 export const UPDATABLE_BOOKING_STATUSES = [
     BOOKING_STATUS.CONFIRMED,
+    BOOKING_STATUS.SAMPLE_COLLECTED,
     BOOKING_STATUS.COMPLETED,
     BOOKING_STATUS.CANCELLED,
+];
+
+// Statuses that a phlebotomist can set on their assigned booking
+export const PHLEBOTOMIST_UPDATABLE_STATUSES = [
+    BOOKING_STATUS.SAMPLE_COLLECTED,
+    BOOKING_STATUS.COMPLETED,
 ];
 
 // Terminal statuses — once reached, status cannot be changed again

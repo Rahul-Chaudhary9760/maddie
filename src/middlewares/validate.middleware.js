@@ -17,10 +17,30 @@ export const validate = ({ body, query, params } = {}) => {
                 req.body = body.parse(req.body);
             }
             if (query) {
-                req.query = query.parse(req.query);
+                const parsed = query.parse(req.query);
+                try {
+                    req.query = parsed;
+                } catch {
+                    Object.defineProperty(req, 'query', {
+                        value: parsed,
+                        writable: true,
+                        configurable: true,
+                        enumerable: true
+                    });
+                }
             }
             if (params) {
-                req.params = params.parse(req.params);
+                const parsed = params.parse(req.params);
+                try {
+                    req.params = parsed;
+                } catch {
+                    Object.defineProperty(req, 'params', {
+                        value: parsed,
+                        writable: true,
+                        configurable: true,
+                        enumerable: true
+                    });
+                }
             }
             next();
         } catch (error) {

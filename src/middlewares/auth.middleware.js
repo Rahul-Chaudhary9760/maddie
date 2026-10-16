@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../modules/auth/models/user.model.js';
+import Phlebotomist from '../modules/phlebotomist/models/phlebotomist.model.js';
 import { AppError } from '../utils/ApiError.js';
 import { catchAsync } from '../utils/catchAsync.js';
 import { USER_ROLES } from '../config/constants.js';
@@ -12,7 +13,7 @@ import logger from '../utils/logger.js';
  *   1. Authorization header → "Bearer <token>"
  *   2. httpOnly cookie      → accessToken
  * 
- * Attaches the authenticated user to req.user
+ * Attaches the authenticated user / phlebotomist to req.user
  */
 export const protect = catchAsync(async (req, res, next) => {
     let token;
@@ -40,14 +41,29 @@ export const protect = catchAsync(async (req, res, next) => {
         throw new AppError('Invalid or expired access token. Please log in again.', 401);
     }
 
-    // Check if user still exists (account not deleted after token was issued)
-    const currentUser = await User.findById(decoded._id);
-    if (!currentUser) {
-        logger.warn(`🔒 Auth Failed: User for token ${decoded._id} no longer exists in DB`);
-        throw new AppError('The user belonging to this token no longer exists.', 401);
+    // Check if account still exists in User or Phlebotomist collection
+    let currentUser;
+    if (decoded.role === USER_ROLES.PHLEBOTOMIST) {
+        currentUser = await Phlebotomist.findById(decoded._id);
+    } else {
+        currentUser = await User.findById(decoded._id);
     }
 
-    // Attach user to request for downstream use
+    if (!currentUser) {
+        currentUser = (await Phlebotomist.findById(decoded._id)) || (await User.findById(decoded._id));
+    }
+
+    if (!currentUser) {
+        logger.warn(`🔒 Auth Failed: Account for token ${decoded._id} no longer exists in DB`);
+        throw new AppError('The account belonging to this token no longer exists.', 401);
+    }
+
+    if (currentUser.isActive === false) {
+        logger.warn(`🔒 Auth Failed: Account ${currentUser.email} is inactive`);
+        throw new AppError('Your account has been deactivated.', 403);
+    }
+
+    // Attach user/phlebotomist to request for downstream use
     req.user = currentUser;
     next();
 });

@@ -8,9 +8,9 @@ import { cookieOptions } from '../utils/token.utils.js';
  * Body: { name, email, password, role? }
  */
 export const register = catchAsync(async (req, res) => {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, phone } = req.body;
 
-    const user = await authService.registerUser({ name, email, password, role });
+    const user = await authService.registerUser({ name, email, password, role, phone });
 
     res.status(201).json(
         new ApiResponse(201, user, 'Account created successfully')

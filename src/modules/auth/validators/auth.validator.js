@@ -16,6 +16,12 @@ export const registerSchema = z.object({
         .string({ required_error: 'Password is required' })
         .min(6, 'Password must be at least 6 characters long')
         .max(100, 'Password cannot exceed 100 characters'),
+    phone: z
+        .string()
+        .trim()
+        .max(20, 'Phone cannot exceed 20 characters')
+        .optional()
+        .default(''),
     role: z
         .enum(Object.values(USER_ROLES), {
             errorMap: () => ({ message: `Role must be one of: ${Object.values(USER_ROLES).join(', ')}` })

@@ -50,6 +50,11 @@ const bookingSchema = new mongoose.Schema(
             required: [true, 'Patient name is required'],
             trim: true
         },
+        patientPhone: {
+            type: String,
+            trim: true,
+            default: ''
+        },
         patientAge: {
             type: Number,
             required: [true, 'Patient age is required'],
@@ -89,7 +94,35 @@ const bookingSchema = new mongoose.Schema(
             trim: true,
             default: ''
         },
-        // Lab staff who last updated the status
+        // Phlebotomist assigned by admin/lab staff to collect sample
+        assignedPhlebotomist: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Phlebotomist',
+            default: null
+        },
+        // Admin or staff member who assigned the phlebotomist
+        assignedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            default: null
+        },
+        // Date & time when phlebotomist was assigned
+        assignedAt: {
+            type: Date,
+            default: null
+        },
+        // Timestamp when sample was collected by phlebotomist
+        sampleCollectedAt: {
+            type: Date,
+            default: null
+        },
+        // Notes added by phlebotomist during home visit / sample collection
+        collectionNotes: {
+            type: String,
+            trim: true,
+            default: ''
+        },
+        // Lab staff or phlebotomist who last updated the status
         updatedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
@@ -103,6 +136,8 @@ const bookingSchema = new mongoose.Schema(
 bookingSchema.index({ user: 1, appointmentDate: -1 });
 // Index for admin/lab staff to filter by status
 bookingSchema.index({ status: 1, appointmentDate: 1 });
+// Index for phlebotomist's assigned tasks
+bookingSchema.index({ assignedPhlebotomist: 1, appointmentDate: 1 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
 export default Booking;
