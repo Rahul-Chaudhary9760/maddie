@@ -16,10 +16,15 @@ export const USER_ROLES = {
 
 // ─── Test Categories ──────────────────────────────────────────────────────────
 export const TEST_CATEGORIES = {
-    BLOOD:     'Blood',
-    URINE:     'Urine',
+    BLOOD: 'Blood',
+    URINE: 'Urine',
     RADIOLOGY: 'Radiology',
     FULL_BODY: 'Full Body',
+    DIABETES: 'Diabetes',
+    THYROID: 'Thyroid',
+    HEART: 'Heart',
+    WOMEN_HEALTH: 'Women Health',
+    SENIOR_HEALTH: 'Senior Health'
 };
 
 // ─── Booking Statuses ─────────────────────────────────────────────────────────
