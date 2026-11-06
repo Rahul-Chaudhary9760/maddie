@@ -32,3 +32,11 @@ export const updateTestSchema = createTestSchema
     .refine((data) => Object.keys(data).length > 0, {
         message: 'At least one field must be provided to update'
     });
+
+export const getTestsQuerySchema = z.object({
+    page: z.coerce.number().int().min(1).optional().default(1),
+    limit: z.coerce.number().int().min(1).max(100).optional().default(10),
+    search: z.string().trim().optional(),
+    category: z.string().trim().optional(),
+    isAvailable: z.enum(['true', 'false']).optional()
+}).passthrough();

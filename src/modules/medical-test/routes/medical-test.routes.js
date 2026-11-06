@@ -9,15 +9,15 @@ import {
 import { protect, restrictTo } from '../../../middlewares/auth.middleware.js';
 import { validate } from '../../../middlewares/validate.middleware.js';
 import { idParamSchema } from '../../../utils/validation.utils.js';
-import { createTestSchema, updateTestSchema } from '../validators/medical-test.validator.js';
+import { createTestSchema, updateTestSchema, getTestsQuerySchema } from '../validators/medical-test.validator.js';
 import { USER_ROLES } from '../../../config/constants.js';
 
 const router = express.Router();
 
 // ─── Public Routes ────────────────────────────────────────────────────────────
 
-// GET    /api/v1/tests       -> Saare available tests
-router.get('/', getTests);
+// GET    /api/v1/tests       -> Saare available tests (paginated, default limit: 10)
+router.get('/', validate({ query: getTestsQuerySchema }), getTests);
 
 // GET    /api/v1/tests/:id   -> Ek specific test by ID
 router.get('/:id', validate({ params: idParamSchema }), getTestById);

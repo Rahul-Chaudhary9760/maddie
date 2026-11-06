@@ -5,17 +5,13 @@ import { AppError } from '../../../utils/ApiError.js';
 
 /**
  * GET /api/v1/tests
- * Saare available tests fetch karna
+ * Available tests fetch karna (paginated, default 10 per page)
  */
 export const getTests = catchAsync(async (req, res) => {
-    const tests = await testService.getAllAvailableTests();
-
-    if (!tests || tests.length === 0) {
-        throw new AppError("No tests found in the catalog", 404);
-    }
+    const { tests, pagination } = await testService.getAllAvailableTests(req.query);
 
     res.status(200).json(
-        new ApiResponse(200, tests, "Tests fetched successfully")
+        new ApiResponse(200, tests, "Tests fetched successfully", pagination)
     );
 });
 

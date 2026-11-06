@@ -3,13 +3,63 @@ import { AppError } from '../../../utils/ApiError.js';
 import logger from '../../../utils/logger.js';
 
 /**
- * Fetch all available medical tests
- * (Future me isme pagination aur search filters add kar sakte hain)
+ * Fetch paginated available medical tests catalog
  */
-export const getAllAvailableTests = async (query = {}) => {
-    logger.debug('Fetching all available medical tests catalog');
-    const tests = await Test.find({ isAvailable: true, ...query }).sort({ createdAt: -1 });
-    return tests;
+export const getAllAvailableTests = async (queryParams = {}) => {
+    logger.debug('Fetching available medical tests catalog with pagination');
+
+    const page = Math.max(1, parseInt(queryParams.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(queryParams.limit, 10) || 10));
+    const skip = (page - 1) * limit;
+
+    const filter = {};
+
+    if (queryParams.isAvailable !== undefined) {
+        filter.isAvailable = queryParams.isAvailable === 'true' || queryParams.isAvailable === true;
+    } else {
+        filter.isAvailable = true;
+    }
+
+    if (queryParams.category) {
+        filter.category = new RegExp(`^${queryParams.category.trim()}$`, 'i');
+    }
+
+    if (queryParams.search) {
+        const trimmed = queryParams.search.trim();
+        const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const searchRegex = new RegExp(escaped, 'i');
+        const orConditions = [
+            { name: searchRegex },
+            { description: searchRegex }
+        ];
+        if (/^[0-9a-fA-F]{24}$/.test(trimmed)) {
+            orConditions.push({ _id: trimmed });
+        }
+        filter.$or = orConditions;
+    }
+
+    const [total, tests] = await Promise.all([
+        Test.countDocuments(filter),
+        Test.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean()
+    ]);
+
+    const totalPages = Math.ceil(total / limit) || 1;
+
+    return {
+        tests,
+        pagination: {
+            total,
+            page,
+            limit,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
+        }
+    };
 };
 
 /**
